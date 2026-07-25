@@ -11,6 +11,10 @@ const UNIT_OPTIONS = [
 
 const DRAFT_KEY = "angebotplus_draft";
 
+// Backend API base URL. Requests go to Render directly so the frontend can be
+// hosted separately (e.g. on Vercel) without breaking API calls.
+const API_BASE = "https://angebot-plus-b2b.onrender.com";
+
 const els = {
   form: document.getElementById("offer-form"),
   itemsContainer: document.getElementById("items-container"),
@@ -248,7 +252,7 @@ function renderPreview() {
 
 // ------------------------------- API calls -------------------------------
 async function fetchNextOfferNumber() {
-  const res = await fetch("/api/offers/next-number");
+  const res = await fetch(`${API_BASE}/api/offers/next-number`);
   const data = await res.json();
   els.offerNumber.value = data.offer_number;
 }
@@ -269,7 +273,7 @@ async function submitOffer(e) {
   els.btnGenerate.disabled = true;
   els.btnGenerate.classList.add("opacity-60");
   try {
-    const res = await fetch("/api/offers/generate-pdf", {
+    const res = await fetch(`${API_BASE}/api/offers/generate-pdf`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
@@ -322,7 +326,7 @@ async function openHistory() {
   els.historyList.innerHTML = "";
   els.historyEmpty.classList.add("hidden");
   try {
-    const res = await fetch("/api/offers");
+    const res = await fetch(`${API_BASE}/api/offers`);
     const offers = await res.json();
     if (!offers.length) {
       els.historyEmpty.classList.remove("hidden");
@@ -360,12 +364,12 @@ els.historyList?.addEventListener("click", async (e) => {
   const action = btn.dataset.action;
 
   if (action === "pdf") {
-    window.open(`/api/offers/${id}/pdf`, "_blank");
+    window.open(`${API_BASE}/api/offers/${id}/pdf`, "_blank");
     return;
   }
   if (action === "load") {
     try {
-      const res = await fetch(`/api/offers/${id}`);
+      const res = await fetch(`${API_BASE}/api/offers/${id}`);
       if (!res.ok) throw new Error();
       const offer = await res.json();
       populateForm(offer);
@@ -379,7 +383,7 @@ els.historyList?.addEventListener("click", async (e) => {
   if (action === "delete") {
     if (!confirm("Dieses Angebot wirklich löschen?")) return;
     try {
-      const res = await fetch(`/api/offers/${id}`, { method: "DELETE" });
+      const res = await fetch(`${API_BASE}/api/offers/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
       showToast("Angebot gelöscht.", "success");
       openHistory();
