@@ -28,6 +28,30 @@ COOL_GRAY = colors.HexColor("#F8FAFC")
 
 UNIT_LABELS = {"Std": "Std.", "Pauschal": "Pauschal", "m2": "m²", "Stk": "Stk."}
 
+DOC_TYPE_TEXTS = {
+    "angebot": {
+        "title": "Angebot",
+        "number_label": "Angebotsnummer",
+        "meta3_label": "Gültig bis",
+        "intro": "Sehr geehrte Damen und Herren,<br/>vielen Dank für Ihre Anfrage. Wir unterbreiten Ihnen gerne folgendes Angebot:",
+        "closing": lambda d: f"Zahlbar innerhalb von 14 Tagen ohne Abzug. Dieses Angebot ist gültig bis {d}.<br/>Wir freuen uns auf Ihren Auftrag.",
+    },
+    "rechnung": {
+        "title": "Rechnung",
+        "number_label": "Rechnungsnummer",
+        "meta3_label": "Zahlbar bis",
+        "intro": "Sehr geehrte Damen und Herren,<br/>für die erbrachten Leistungen stellen wir Ihnen wie folgt in Rechnung:",
+        "closing": lambda d: f"Bitte überweisen Sie den Rechnungsbetrag bis zum {d} unter Angabe der Rechnungsnummer auf u. g. Konto.<br/>Vielen Dank für Ihr Vertrauen.",
+    },
+    "auftragsbestaetigung": {
+        "title": "Auftragsbestätigung",
+        "number_label": "Auftragsnummer",
+        "meta3_label": "Ausführung bis",
+        "intro": "Sehr geehrte Damen und Herren,<br/>hiermit bestätigen wir den folgenden Auftrag gemäß Ihrer Bestellung:",
+        "closing": lambda d: f"Die Ausführung erfolgt voraussichtlich bis zum {d}.<br/>Wir freuen uns auf die Zusammenarbeit.",
+    },
+}
+
 
 def fmt_eur(value: float) -> str:
     s = f"{value:,.2f}"
@@ -52,6 +76,8 @@ def fmt_date_de(iso_str: str) -> str:
 
 
 def generate_offer_pdf(offer: dict) -> bytes:
+    doc_texts = DOC_TYPE_TEXTS.get(offer.get("document_type", "angebot"), DOC_TYPE_TEXTS["angebot"])
+
     buf = BytesIO()
     doc = BaseDocTemplate(
         buf,
@@ -60,7 +86,7 @@ def generate_offer_pdf(offer: dict) -> bytes:
         rightMargin=2 * cm,
         topMargin=1.5 * cm,
         bottomMargin=2 * cm,
-        title=f"Angebot {offer['offer_number']}",
+        title=f"{doc_texts['title']} {offer['offer_number']}",
     )
     frame = Frame(
         doc.leftMargin, doc.bottomMargin,
@@ -88,9 +114,9 @@ def generate_offer_pdf(offer: dict) -> bytes:
     )
 
     meta_data = [
-        [Paragraph("Angebotsnummer", label), Paragraph(offer["offer_number"], normal)],
+        [Paragraph(doc_texts["number_label"], label), Paragraph(offer["offer_number"], normal)],
         [Paragraph("Datum", label), Paragraph(fmt_date_de(offer["offer_date"]), normal)],
-        [Paragraph("Gültig bis", label), Paragraph(_valid_until(offer), normal)],
+        [Paragraph(doc_texts["meta3_label"], label), Paragraph(_valid_until(offer), normal)],
     ]
     meta_table = Table(meta_data, colWidths=[3.1 * cm, 3.4 * cm])
     meta_table.setStyle(TableStyle([
@@ -121,11 +147,8 @@ def generate_offer_pdf(offer: dict) -> bytes:
     story.append(Spacer(1, 1.3 * cm))
 
     # --- Title ---
-    story.append(Paragraph("Angebot", h1))
-    story.append(Paragraph(
-        f"Sehr geehrte Damen und Herren,<br/>vielen Dank für Ihre Anfrage. Wir unterbreiten Ihnen gerne folgendes Angebot:",
-        normal,
-    ))
+    story.append(Paragraph(doc_texts["title"], h1))
+    story.append(Paragraph(doc_texts["intro"], normal))
     story.append(Spacer(1, 0.6 * cm))
 
     # --- Items table ---
@@ -199,12 +222,7 @@ def generate_offer_pdf(offer: dict) -> bytes:
         ))
 
     story.append(Spacer(1, 1 * cm))
-    story.append(Paragraph(
-        f"Zahlbar innerhalb von 14 Tagen ohne Abzug. Dieses Angebot ist gültig bis {_valid_until(offer)}.",
-        normal,
-    ))
-    story.append(Spacer(1, 0.15 * cm))
-    story.append(Paragraph("Wir freuen uns auf Ihren Auftrag.", normal))
+    story.append(Paragraph(doc_texts["closing"](_valid_until(offer)), normal))
 
     def draw_footer(canvas, _doc):
         canvas.saveState()

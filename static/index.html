@@ -29,6 +29,56 @@
 </head>
 <body class="bg-coolgray text-navy font-sans antialiased">
 
+<!-- ============================== LANDING / HERO ============================== -->
+<section id="landing" class="landing">
+  <div class="landing-bg"></div>
+  <div class="landing-inner">
+    <div class="landing-badge">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span>
+      Live Demo · Enterprise SaaS Showcase
+    </div>
+    <h1 class="landing-title">Professionelle Angebote, Rechnungen &amp; Auftragsbestätigungen – in Minuten statt Stunden.</h1>
+    <p class="landing-sub">AngebotPlus B2B erstellt rechtssichere, DIN&nbsp;5008-orientierte B2B-Dokumente mit automatischer MwSt-Berechnung, Live-Vorschau und PDF-Export – direkt im Browser, ohne Word oder Excel.</p>
+    <button id="btn-start" type="button" class="landing-cta">
+      Angebot erstellen / Jetzt starten
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+
+    <div class="landing-features">
+      <div class="landing-feature">
+        <div class="landing-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>
+        </div>
+        <div class="landing-feature-title">Live A4-Vorschau</div>
+        <div class="landing-feature-desc">Sehen Sie Ihr Dokument in Echtzeit, während Sie tippen.</div>
+      </div>
+      <div class="landing-feature">
+        <div class="landing-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+        </div>
+        <div class="landing-feature-title">3 Dokumenttypen</div>
+        <div class="landing-feature-desc">Angebot, Rechnung und Auftragsbestätigung aus einem Formular.</div>
+      </div>
+      <div class="landing-feature">
+        <div class="landing-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="1.5"/><circle cx="17" cy="17" r="1.5"/><path d="M19 5 5 19"/></svg>
+        </div>
+        <div class="landing-feature-title">Automatische MwSt.</div>
+        <div class="landing-feature-desc">19&nbsp;%, 7&nbsp;% oder §19 UStG – korrekt berechnet, jedes Mal.</div>
+      </div>
+      <div class="landing-feature">
+        <div class="landing-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M6 9l6 6 6-6"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+        </div>
+        <div class="landing-feature-title">PDF in einem Klick</div>
+        <div class="landing-feature-desc">Fertiges, druckreifes Dokument direkt zum Download.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="app-shell" class="hidden">
+
 <!-- ============================== NAVBAR ============================== -->
 <header class="sticky top-0 z-40 bg-navy text-white shadow-lg">
   <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
@@ -59,6 +109,21 @@
     </span>
   </div>
 </header>
+
+<!-- ========================= DOCUMENT TYPE BAR ========================= -->
+<div class="doctype-bar">
+  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="doctype-switch" role="group" aria-label="Dokumenttyp auswählen">
+      <button type="button" class="doctype-btn active" data-type="angebot">Angebot</button>
+      <button type="button" class="doctype-btn" data-type="rechnung">Rechnung</button>
+      <button type="button" class="doctype-btn" data-type="auftragsbestaetigung">Auftragsbestätigung</button>
+    </div>
+    <button type="button" id="btn-load-demo" class="btn-demo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+      Demo-Daten laden
+    </button>
+  </div>
+</div>
 
 <!-- ======================= MOBILE TAB SWITCHER ======================== -->
 <div class="lg:hidden sticky top-[57px] z-30 bg-white border-b border-bordergray flex">
@@ -124,10 +189,10 @@
 
       <!-- Angebotsmetadaten -->
       <fieldset class="card">
-        <legend class="card-title"><span class="step-badge">3</span> Angebotsdaten</legend>
+        <legend class="card-title"><span class="step-badge">3</span> Dokumentdaten</legend>
         <div class="grid sm:grid-cols-3 gap-4">
           <label class="field">
-            <span>Angebotsnummer</span>
+            <span id="label-offer-number">Angebotsnummer</span>
             <input type="text" name="offer_number" id="offer_number" required />
           </label>
           <label class="field">
@@ -135,7 +200,7 @@
             <input type="date" name="offer_date" id="offer_date" required />
           </label>
           <label class="field">
-            <span>Gültigkeit (Tage)</span>
+            <span id="label-validity-days">Gültigkeit (Tage)</span>
             <input type="number" name="validity_days" id="validity_days" min="1" value="30" required />
           </label>
         </div>
@@ -203,16 +268,16 @@
         <div class="a4-topline">
           <div id="pv-sender" class="a4-sender"></div>
           <table class="a4-meta">
-            <tr><td class="a4-meta-label">Angebotsnummer</td><td id="pv-offer-number" class="a4-meta-value"></td></tr>
+            <tr><td id="pv-number-label" class="a4-meta-label">Angebotsnummer</td><td id="pv-offer-number" class="a4-meta-value"></td></tr>
             <tr><td class="a4-meta-label">Datum</td><td id="pv-offer-date" class="a4-meta-value"></td></tr>
-            <tr><td class="a4-meta-label">Gültig bis</td><td id="pv-valid-until" class="a4-meta-value"></td></tr>
+            <tr><td id="pv-meta3-label" class="a4-meta-label">Gültig bis</td><td id="pv-valid-until" class="a4-meta-value"></td></tr>
           </table>
         </div>
 
         <div id="pv-client" class="a4-client"></div>
 
-        <h1 class="a4-title">Angebot</h1>
-        <p class="a4-intro">Sehr geehrte Damen und Herren,<br/>vielen Dank für Ihre Anfrage. Wir unterbreiten Ihnen gerne folgendes Angebot:</p>
+        <h1 id="pv-doc-title" class="a4-title">Angebot</h1>
+        <p id="pv-intro" class="a4-intro"></p>
 
         <table class="a4-items">
           <thead>
@@ -230,10 +295,7 @@
 
         <p id="pv-note" class="a4-small-note"></p>
 
-        <p class="a4-closing">
-          Zahlbar innerhalb von 14 Tagen ohne Abzug. Dieses Angebot ist gültig bis <span id="pv-valid-until-2"></span>.<br/>
-          Wir freuen uns auf Ihren Auftrag.
-        </p>
+        <p id="pv-closing" class="a4-closing"></p>
 
         <div class="a4-footer">
           <div class="a4-footer-name" id="pv-footer-name"></div>
@@ -263,6 +325,8 @@
 
 <!-- ================================ TOAST ================================ -->
 <div id="toast" class="toast hidden"></div>
+
+</div><!-- /#app-shell -->
 
 <script src="app.js"></script>
 </body>

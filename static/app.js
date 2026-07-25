@@ -15,6 +15,39 @@ const DRAFT_KEY = "angebotplus_draft";
 // hosted separately (e.g. on Vercel) without breaking API calls.
 const API_BASE = "https://angebot-plus-b2b.onrender.com";
 
+// Per-document-type texts. Keys must match the backend's DOC_TYPE_PREFIXES / DOC_TYPE_TEXTS.
+const DOC_TYPES = {
+  angebot: {
+    label: "Angebot",
+    docTitle: "Angebot",
+    numberLabel: "Angebotsnummer",
+    fieldLabel: "Gültigkeit (Tage)",
+    metaLabel3: "Gültig bis",
+    intro: "Sehr geehrte Damen und Herren,<br/>vielen Dank für Ihre Anfrage. Wir unterbreiten Ihnen gerne folgendes Angebot:",
+    closing: (d) => `Zahlbar innerhalb von 14 Tagen ohne Abzug. Dieses Angebot ist gültig bis ${d}.<br/>Wir freuen uns auf Ihren Auftrag.`,
+  },
+  rechnung: {
+    label: "Rechnung",
+    docTitle: "Rechnung",
+    numberLabel: "Rechnungsnummer",
+    fieldLabel: "Zahlungsfrist (Tage)",
+    metaLabel3: "Zahlbar bis",
+    intro: "Sehr geehrte Damen und Herren,<br/>für die erbrachten Leistungen stellen wir Ihnen wie folgt in Rechnung:",
+    closing: (d) => `Bitte überweisen Sie den Rechnungsbetrag bis zum ${d} unter Angabe der Rechnungsnummer auf u. g. Konto.<br/>Vielen Dank für Ihr Vertrauen.`,
+  },
+  auftragsbestaetigung: {
+    label: "Auftragsbestätigung",
+    docTitle: "Auftragsbestätigung",
+    numberLabel: "Auftragsnummer",
+    fieldLabel: "Ausführungsfrist (Tage)",
+    metaLabel3: "Ausführung bis",
+    intro: "Sehr geehrte Damen und Herren,<br/>hiermit bestätigen wir den folgenden Auftrag gemäß Ihrer Bestellung:",
+    closing: (d) => `Die Ausführung erfolgt voraussichtlich bis zum ${d}.<br/>Wir freuen uns auf die Zusammenarbeit.`,
+  },
+};
+
+const state = { documentType: "angebot" };
+
 const els = {
   form: document.getElementById("offer-form"),
   itemsContainer: document.getElementById("items-container"),
@@ -36,6 +69,12 @@ const els = {
   tabPreview: document.getElementById("tab-preview"),
   panelForm: document.getElementById("panel-form"),
   panelPreview: document.getElementById("panel-preview"),
+  landing: document.getElementById("landing"),
+  appShell: document.getElementById("app-shell"),
+  btnStart: document.getElementById("btn-start"),
+  btnLoadDemo: document.getElementById("btn-load-demo"),
+  labelOfferNumber: document.getElementById("label-offer-number"),
+  labelValidityDays: document.getElementById("label-validity-days"),
 };
 
 // ------------------------------- Formatting -------------------------------
@@ -75,6 +114,30 @@ function showToast(message, type = "default") {
   if (type === "error") els.toast.classList.add("toast-error");
   els.toast.classList.remove("hidden");
   toastTimer = setTimeout(() => els.toast.classList.add("hidden"), 3200);
+}
+
+// ------------------------------- Landing / app entry -------------------------------
+function enterApp() {
+  els.landing.classList.add("landing-exit");
+  els.appShell.classList.remove("hidden");
+  requestAnimationFrame(() => els.appShell.classList.add("app-shell-visible"));
+  setTimeout(() => {
+    els.landing.style.display = "none";
+  }, 450);
+}
+
+// ------------------------------- Document type -------------------------------
+function setDocumentType(type, { refreshNumber = true, rerender = true } = {}) {
+  if (!DOC_TYPES[type]) type = "angebot";
+  state.documentType = type;
+  document.querySelectorAll(".doctype-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.type === type);
+  });
+  const dt = DOC_TYPES[type];
+  els.labelOfferNumber.textContent = dt.numberLabel;
+  els.labelValidityDays.textContent = dt.fieldLabel;
+  if (rerender) renderPreview();
+  if (refreshNumber) fetchNextOfferNumber();
 }
 
 // ------------------------------- Line items -------------------------------
@@ -153,6 +216,7 @@ function calcTotals(items, discountPercent, vatRate) {
 function collectFormData() {
   const fd = new FormData(els.form);
   return {
+    document_type: state.documentType,
     offer_number: els.offerNumber.value.trim(),
     offer_date: els.offerDate.value,
     validity_days: parseInt(els.validityDays.value, 10) || 30,
@@ -175,6 +239,7 @@ function collectFormData() {
 }
 
 function populateForm(data) {
+  setDocumentType(data.document_type || "angebot", { refreshNumber: false, rerender: false });
   els.form.querySelector('[name="provider_name"]').value = data.provider?.name || "";
   els.form.querySelector('[name="provider_address"]').value = data.provider?.address || "";
   els.form.querySelector('[name="provider_tax_id"]').value = data.provider?.tax_id || "";
@@ -208,7 +273,13 @@ function renderPreview() {
   document.getElementById("pv-offer-date").textContent = fmtDateDE(data.offer_date);
   const validUntil = validUntilDE(data.offer_date, data.validity_days);
   document.getElementById("pv-valid-until").textContent = validUntil;
-  document.getElementById("pv-valid-until-2").textContent = validUntil;
+
+  const dt = DOC_TYPES[state.documentType] || DOC_TYPES.angebot;
+  document.getElementById("pv-doc-title").textContent = dt.docTitle;
+  document.getElementById("pv-intro").innerHTML = dt.intro;
+  document.getElementById("pv-number-label").textContent = dt.numberLabel;
+  document.getElementById("pv-meta3-label").textContent = dt.metaLabel3;
+  document.getElementById("pv-closing").innerHTML = dt.closing(validUntil);
 
   const clientLines = [data.client.name, data.client.company, ...(data.client.address || "").split("\n")].filter(Boolean);
   document.getElementById("pv-client").innerHTML = clientLines.map(escapeHtml).join("<br/>") || "&nbsp;";
@@ -252,9 +323,14 @@ function renderPreview() {
 
 // ------------------------------- API calls -------------------------------
 async function fetchNextOfferNumber() {
-  const res = await fetch(`${API_BASE}/api/offers/next-number`);
-  const data = await res.json();
-  els.offerNumber.value = data.offer_number;
+  try {
+    const res = await fetch(`${API_BASE}/api/offers/next-number?document_type=${state.documentType}`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    els.offerNumber.value = data.offer_number;
+  } catch {
+    showToast("Nummer konnte nicht geladen werden.", "error");
+  }
 }
 
 async function submitOffer(e) {
@@ -320,6 +396,38 @@ function loadDraftIfPresent() {
   }
 }
 
+// ------------------------------- Demo preset -------------------------------
+async function loadDemoData() {
+  populateForm({
+    document_type: state.documentType,
+    offer_date: new Date().toISOString().slice(0, 10),
+    validity_days: 30,
+    provider: {
+      name: "Elektro & Sanitär Fischer GmbH",
+      address: "Industriestraße 47\n60528 Frankfurt am Main",
+      tax_id: "DE287654321",
+      iban: "DE89 5001 0517 5407 3249 31",
+      email: "buero@fischer-handwerk.de",
+    },
+    client: {
+      name: "Sabine Hoffmann",
+      company: "Hoffmann Bauträger GmbH",
+      address: "Rheinuferweg 8\n50996 Köln",
+    },
+    items: [
+      { description: "Elektroinstallation Neubau, EG + OG", quantity: 1, unit: "Pauschal", unit_price: 4200 },
+      { description: "Verlegung Netzwerkkabel Cat.7", quantity: 180, unit: "m2", unit_price: 6.5 },
+      { description: "Montage Steckdosen & Schalter", quantity: 32, unit: "Stk", unit_price: 18.5 },
+      { description: "Elektriker-Facharbeit", quantity: 24, unit: "Std", unit_price: 68 },
+    ],
+    vat_rate: 19,
+    discount_percent: 5,
+  });
+  await fetchNextOfferNumber();
+  renderPreview();
+  showToast("Demo-Daten geladen.", "success");
+}
+
 // ------------------------------- History modal -------------------------------
 async function openHistory() {
   els.historyModal.classList.remove("hidden");
@@ -337,7 +445,7 @@ async function openHistory() {
         (o) => `
       <div class="history-row" data-id="${o.id}">
         <div>
-          <div class="history-number">${escapeHtml(o.offer_number)}</div>
+          <div class="history-number">${escapeHtml(o.offer_number)}<span class="doctype-badge">${(DOC_TYPES[o.document_type] || DOC_TYPES.angebot).label}</span></div>
           <div class="history-meta">${escapeHtml(o.client_company || o.client_name)} · ${fmtDateDE(o.offer_date)} · ${fmtEUR(o.gross_total)}</div>
         </div>
         <div class="history-actions">
@@ -409,6 +517,11 @@ function setMobileTab(tab) {
 }
 
 // ------------------------------- Wiring -------------------------------
+els.btnStart.addEventListener("click", enterApp);
+els.btnLoadDemo.addEventListener("click", loadDemoData);
+document.querySelectorAll(".doctype-btn").forEach((btn) => {
+  btn.addEventListener("click", () => setDocumentType(btn.dataset.type));
+});
 els.form.addEventListener("input", renderPreview);
 els.form.addEventListener("submit", submitOffer);
 els.btnAddItem.addEventListener("click", () => {

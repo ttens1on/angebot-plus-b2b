@@ -15,6 +15,172 @@
 html, body { height: 100%; }
 body { background: var(--coolgray); }
 
+/* ------------------------------ Landing / hero ------------------------------ */
+#landing {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 64px 20px;
+  transition: opacity .45s ease, transform .45s ease;
+}
+#landing.landing-exit {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+.landing-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(1200px 600px at 12% -10%, rgba(5, 150, 105, 0.22), transparent 60%),
+    radial-gradient(1000px 520px at 100% 0%, rgba(30, 41, 59, 0.9), transparent 55%),
+    linear-gradient(180deg, #0F172A 0%, #111C33 55%, #0B1220 100%);
+}
+.landing-inner {
+  max-width: 900px;
+  text-align: center;
+  color: #fff;
+}
+.landing-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  color: #A7F3D0;
+  margin-bottom: 24px;
+}
+.landing-title {
+  font-size: clamp(28px, 4.4vw, 46px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 18px;
+}
+.landing-sub {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #CBD5E1;
+  max-width: 640px;
+  margin: 0 auto 34px;
+}
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 30px;
+  border-radius: 12px;
+  background: var(--emerald);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 14px 30px -8px rgba(5, 150, 105, 0.55);
+  transition: background .15s, transform .15s;
+}
+.landing-cta:hover { background: #047857; transform: translateY(-1px); }
+.landing-cta svg { width: 18px; height: 18px; }
+
+.landing-features {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  text-align: left;
+}
+@media (min-width: 768px) {
+  .landing-features { grid-template-columns: repeat(4, 1fr); }
+}
+.landing-feature {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 18px;
+}
+.landing-feature-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: rgba(5, 150, 105, 0.18);
+  color: #34D399;
+  margin-bottom: 12px;
+}
+.landing-feature-title { font-weight: 700; font-size: 13.5px; color: #fff; margin-bottom: 4px; }
+.landing-feature-desc { font-size: 12.5px; color: #94A3B8; line-height: 1.5; }
+
+/* ------------------------------ App shell transition ------------------------------ */
+#app-shell {
+  opacity: 0;
+  transition: opacity .45s ease .1s;
+}
+#app-shell.app-shell-visible { opacity: 1; }
+
+/* ------------------------------ Document type switcher ------------------------------ */
+.doctype-bar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+.doctype-switch {
+  display: inline-flex;
+  background: var(--coolgray);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.doctype-btn {
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--slate-500);
+  border-radius: 7px;
+  transition: background .15s, color .15s;
+}
+.doctype-btn:hover { color: var(--navy); }
+.doctype-btn.active { background: var(--navy); color: #fff; }
+
+.btn-demo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--navy);
+  font-size: 12.5px;
+  font-weight: 600;
+  transition: background .15s, border-color .15s;
+}
+.btn-demo:hover { background: var(--coolgray); border-color: var(--navy); }
+.btn-demo svg { width: 15px; height: 15px; }
+
+.doctype-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--coolgray);
+  border: 1px solid var(--border);
+  color: var(--slate-500);
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
 /* ------------------------------ Form primitives ------------------------------ */
 .card {
   background: #fff;

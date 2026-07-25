@@ -46,12 +46,16 @@ def get_db():
         conn.close()
 
 
+DOC_TYPE_PREFIXES = {"angebot": "ANG", "rechnung": "RE", "auftragsbestaetigung": "AB"}
+
+
 def init_db():
     with get_db() as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS offers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                document_type TEXT NOT NULL DEFAULT 'angebot',
                 offer_number TEXT UNIQUE NOT NULL,
                 offer_date TEXT NOT NULL,
                 validity_days INTEGER NOT NULL,
@@ -75,6 +79,10 @@ def init_db():
             )
             """
         )
+        try:
+            conn.execute("ALTER TABLE offers ADD COLUMN document_type TEXT NOT NULL DEFAULT 'angebot'")
+        except sqlite3.OperationalError:
+            pass
 
 
 # --------------------------------------------------------------------------
@@ -102,6 +110,7 @@ class Client(BaseModel):
 
 
 class OfferIn(BaseModel):
+    document_type: str = "angebot"
     offer_number: str
     offer_date: str
     validity_days: int = 30
@@ -174,9 +183,10 @@ def calculate(payload: CalculateIn):
 # API: next offer number
 # --------------------------------------------------------------------------
 @app.get("/api/offers/next-number")
-def next_offer_number():
+def next_offer_number(document_type: str = "angebot"):
     year = date.today().year
-    prefix = f"ANG-{year}-"
+    prefix_code = DOC_TYPE_PREFIXES.get(document_type, "ANG")
+    prefix = f"{prefix_code}-{year}-"
     with get_db() as conn:
         cur = conn.execute(
             "SELECT COUNT(*) AS n FROM offers WHERE offer_number LIKE ?",
@@ -202,15 +212,17 @@ def create_offer(payload: OfferIn):
             cur = conn.execute(
                 """
                 INSERT INTO offers (
+                    document_type,
                     offer_number, offer_date, validity_days,
                     provider_name, provider_address, provider_tax_id, provider_iban, provider_email,
                     client_name, client_company, client_address,
                     items_json, vat_rate, discount_percent,
                     subtotal_net, discount_amount, net_after_discount, vat_amount, gross_total,
                     created_at
-                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
                 """,
                 (
+                    payload.document_type,
                     payload.offer_number,
                     payload.offer_date,
                     payload.validity_days,
@@ -245,7 +257,7 @@ def create_offer(payload: OfferIn):
 def list_offers():
     with get_db() as conn:
         rows = conn.execute(
-            "SELECT id, offer_number, offer_date, client_name, client_company, gross_total, created_at "
+            "SELECT id, document_type, offer_number, offer_date, client_name, client_company, gross_total, created_at "
             "FROM offers ORDER BY id DESC"
         ).fetchall()
     return [dict(r) for r in rows]
