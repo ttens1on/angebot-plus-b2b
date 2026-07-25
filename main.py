@@ -12,7 +12,7 @@ from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, Response
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -163,17 +163,6 @@ def on_startup():
 
 
 # --------------------------------------------------------------------------
-# Static frontend
-# --------------------------------------------------------------------------
-@app.get("/", response_class=HTMLResponse)
-def serve_index():
-    return (STATIC_DIR / "index.html").read_text(encoding="utf-8")
-
-
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
-
-
-# --------------------------------------------------------------------------
 # API: calculation
 # --------------------------------------------------------------------------
 @app.post("/api/calculate")
@@ -314,3 +303,9 @@ def create_offer_and_pdf(payload: OfferIn):
             "X-Offer-Id": str(saved["id"]),
         },
     )
+
+
+# --------------------------------------------------------------------------
+# Static frontend (mounted last so it never shadows the /api/* routes above)
+# --------------------------------------------------------------------------
+app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
