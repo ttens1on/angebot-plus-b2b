@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AngebotPlus B2B – Smart Offer &amp; PDF Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        colors: {
+          navy: '#0F172A',
+          navy2: '#1E293B',
+          coolgray: '#F8FAFC',
+          bordergray: '#E2E8F0',
+          emerald: '#059669',
+          emerald2: '#047857',
+        },
+      },
+    },
+  };
+</script>
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="bg-coolgray text-navy font-sans antialiased">
+
+<!-- ============================== NAVBAR ============================== -->
+<header class="sticky top-0 z-40 bg-navy text-white shadow-lg">
+  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-emerald flex items-center justify-center font-extrabold text-white text-lg shrink-0">A+</div>
+      <div class="leading-tight">
+        <div class="font-bold text-[15px] sm:text-base tracking-tight">AngebotPlus B2B</div>
+        <div class="text-[11px] text-slate-400 hidden sm:block">Smart Offer &amp; PDF Generator für Handwerk &amp; B2B</div>
+      </div>
+      <span class="hidden md:inline-flex items-center gap-1.5 ml-3 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-medium text-slate-200">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span>
+        Live Demo | Enterprise SaaS Showcase
+      </span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-history" type="button"
+        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-sm font-medium transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
+        <span class="hidden sm:inline">Gespeicherte Angebote</span>
+        <span class="sm:hidden">Historie</span>
+      </button>
+    </div>
+  </div>
+  <div class="md:hidden px-4 pb-2 -mt-1">
+    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-medium text-slate-200">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span>
+      Live Demo | Enterprise SaaS Showcase
+    </span>
+  </div>
+</header>
+
+<!-- ======================= MOBILE TAB SWITCHER ======================== -->
+<div class="lg:hidden sticky top-[57px] z-30 bg-white border-b border-bordergray flex">
+  <button id="tab-form" class="flex-1 py-3 text-sm font-semibold border-b-2 border-navy text-navy" data-tab="form">Formular bearbeiten</button>
+  <button id="tab-preview" class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400" data-tab="preview">PDF-Vorschau</button>
+</div>
+
+<!-- ============================== MAIN ================================ -->
+<main class="max-w-[1600px] mx-auto lg:grid lg:grid-cols-2 lg:gap-0">
+
+  <!-- ---------------------------- FORM PANEL ---------------------------- -->
+  <section id="panel-form" class="px-4 sm:px-6 py-6 lg:pr-8 lg:border-r lg:border-bordergray max-h-[calc(100vh-57px)] lg:overflow-y-auto">
+    <form id="offer-form" class="space-y-6" autocomplete="off">
+
+      <!-- Anbieter -->
+      <fieldset class="card">
+        <legend class="card-title">
+          <span class="step-badge">1</span> Anbieter <span class="text-slate-400 font-normal">(Ihr Unternehmen)</span>
+        </legend>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="field sm:col-span-2">
+            <span>Firmenname</span>
+            <input type="text" name="provider_name" required placeholder="Musterhandwerk GmbH" value="Musterhandwerk GmbH" />
+          </label>
+          <label class="field sm:col-span-2">
+            <span>Adresse</span>
+            <textarea name="provider_address" rows="2" required placeholder="Musterstraße 12&#10;10115 Berlin">Musterstraße 12
+10115 Berlin</textarea>
+          </label>
+          <label class="field">
+            <span>Steuernummer / USt-IdNr.</span>
+            <input type="text" name="provider_tax_id" placeholder="DE123456789" value="DE123456789" />
+          </label>
+          <label class="field">
+            <span>IBAN</span>
+            <input type="text" name="provider_iban" placeholder="DE12 3456 7890 1234 5678 90" value="DE12 3456 7890 1234 5678 90" />
+          </label>
+          <label class="field sm:col-span-2">
+            <span>Kontakt-E-Mail</span>
+            <input type="email" name="provider_email" placeholder="kontakt@musterhandwerk.de" value="kontakt@musterhandwerk.de" />
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Empfänger -->
+      <fieldset class="card">
+        <legend class="card-title"><span class="step-badge">2</span> Empfänger <span class="text-slate-400 font-normal">(Kunde)</span></legend>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="field">
+            <span>Name</span>
+            <input type="text" name="client_name" required placeholder="Max Mustermann" />
+          </label>
+          <label class="field">
+            <span>Firma <span class="opt">(optional)</span></span>
+            <input type="text" name="client_company" placeholder="Mustermann Immobilien KG" />
+          </label>
+          <label class="field sm:col-span-2">
+            <span>Adresse</span>
+            <textarea name="client_address" rows="2" required placeholder="Beispielweg 4&#10;80331 München"></textarea>
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Angebotsmetadaten -->
+      <fieldset class="card">
+        <legend class="card-title"><span class="step-badge">3</span> Angebotsdaten</legend>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <label class="field">
+            <span>Angebotsnummer</span>
+            <input type="text" name="offer_number" id="offer_number" required />
+          </label>
+          <label class="field">
+            <span>Datum</span>
+            <input type="date" name="offer_date" id="offer_date" required />
+          </label>
+          <label class="field">
+            <span>Gültigkeit (Tage)</span>
+            <input type="number" name="validity_days" id="validity_days" min="1" value="30" required />
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Positionen -->
+      <fieldset class="card">
+        <legend class="card-title"><span class="step-badge">4</span> Positionen</legend>
+        <div class="hidden sm:grid grid-cols-[1fr_70px_90px_100px_100px_32px] gap-2 px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+          <span>Beschreibung</span><span>Menge</span><span>Einheit</span><span>Preis/Einh.</span><span>Gesamt</span><span></span>
+        </div>
+        <div id="items-container" class="space-y-2"></div>
+        <button type="button" id="btn-add-item"
+          class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-emerald transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Position hinzufügen
+        </button>
+      </fieldset>
+
+      <!-- MwSt & Rabatt -->
+      <fieldset class="card">
+        <legend class="card-title"><span class="step-badge">5</span> Steuern &amp; Rabatt</legend>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="field">
+            <span>MwSt.-Satz</span>
+            <select name="vat_rate" id="vat_rate">
+              <option value="19" selected>19 % (Standard)</option>
+              <option value="7">7 % (Ermäßigt)</option>
+              <option value="0">0 % (§19 UStG Kleinunternehmer)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Rabatt (%) <span class="opt">(optional)</span></span>
+            <input type="number" name="discount_percent" id="discount_percent" min="0" max="100" step="0.5" value="0" />
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Action bar -->
+      <div class="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 py-4 bg-coolgray/95 backdrop-blur border-t border-bordergray flex flex-col sm:flex-row gap-3">
+        <button type="submit" id="btn-generate"
+          class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald hover:bg-emerald2 text-white font-semibold text-sm shadow-md shadow-emerald/20 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M6 9l6 6 6-6"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+          Angebot als PDF generieren &amp; Speichern
+        </button>
+        <button type="button" id="btn-draft"
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white border border-bordergray hover:border-navy text-navy font-semibold text-sm transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+          Entwurf speichern
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- --------------------------- PREVIEW PANEL --------------------------- -->
+  <section id="panel-preview" class="hidden lg:block px-4 sm:px-6 py-6 lg:pl-8 bg-coolgray max-h-[calc(100vh-57px)] lg:overflow-y-auto">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Live-Vorschau · A4</h2>
+      <span class="text-[11px] text-slate-400">Aktualisiert in Echtzeit</span>
+    </div>
+
+    <div id="a4-wrapper" class="a4-wrapper">
+      <div id="a4-preview" class="a4-page">
+
+        <div class="a4-topline">
+          <div id="pv-sender" class="a4-sender"></div>
+          <table class="a4-meta">
+            <tr><td class="a4-meta-label">Angebotsnummer</td><td id="pv-offer-number" class="a4-meta-value"></td></tr>
+            <tr><td class="a4-meta-label">Datum</td><td id="pv-offer-date" class="a4-meta-value"></td></tr>
+            <tr><td class="a4-meta-label">Gültig bis</td><td id="pv-valid-until" class="a4-meta-value"></td></tr>
+          </table>
+        </div>
+
+        <div id="pv-client" class="a4-client"></div>
+
+        <h1 class="a4-title">Angebot</h1>
+        <p class="a4-intro">Sehr geehrte Damen und Herren,<br/>vielen Dank für Ihre Anfrage. Wir unterbreiten Ihnen gerne folgendes Angebot:</p>
+
+        <table class="a4-items">
+          <thead>
+            <tr>
+              <th class="al-c">Pos.</th><th>Beschreibung</th><th class="al-r">Menge</th>
+              <th class="al-r">Einheit</th><th class="al-r">Einzelpreis</th><th class="al-r">Gesamtpreis</th>
+            </tr>
+          </thead>
+          <tbody id="pv-items"></tbody>
+        </table>
+
+        <table class="a4-totals">
+          <tbody id="pv-totals"></tbody>
+        </table>
+
+        <p id="pv-note" class="a4-small-note"></p>
+
+        <p class="a4-closing">
+          Zahlbar innerhalb von 14 Tagen ohne Abzug. Dieses Angebot ist gültig bis <span id="pv-valid-until-2"></span>.<br/>
+          Wir freuen uns auf Ihren Auftrag.
+        </p>
+
+        <div class="a4-footer">
+          <div class="a4-footer-name" id="pv-footer-name"></div>
+          <div class="a4-footer-line" id="pv-footer-line"></div>
+          <div class="a4-footer-demo">Dies ist eine interaktive Demo-Anwendung zu Portfolio-Zwecken. Alle Angaben ohne Gewähr.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Mobile-only preview (reuses same markup structure via JS mirror on small screens is complex;
+     instead we show the same #panel-preview when tab=preview on mobile via CSS class toggle) -->
+
+<!-- ============================ HISTORY MODAL =========================== -->
+<div id="history-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-bordergray">
+      <h3 class="font-bold text-navy">Gespeicherte Angebote</h3>
+      <button id="btn-close-history" class="text-slate-400 hover:text-navy text-xl leading-none">&times;</button>
+    </div>
+    <div id="history-list" class="max-h-[60vh] overflow-y-auto divide-y divide-bordergray"></div>
+    <div id="history-empty" class="hidden p-8 text-center text-sm text-slate-400">Noch keine Angebote gespeichert.</div>
+  </div>
+</div>
+
+<!-- ================================ TOAST ================================ -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

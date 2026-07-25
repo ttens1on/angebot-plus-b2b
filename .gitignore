@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+offers.db
+*.pdf
+server_out.log
+server_err.log
