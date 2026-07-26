@@ -2,12 +2,14 @@
 // AngebotPlus B2B — client-side logic: dynamic items, live preview, API calls
 // ============================================================================
 
-const UNIT_OPTIONS = [
-  { value: "Std", label: "Std." },
-  { value: "Pauschal", label: "Pauschal" },
-  { value: "m2", label: "m²" },
-  { value: "Stk", label: "Stk." },
-];
+function buildUnitOptions() {
+  return [
+    { value: "Std", label: t("units.hours") },
+    { value: "Pauschal", label: t("units.flat") },
+    { value: "m2", label: t("units.sqm") },
+    { value: "Stk", label: t("units.pieces") },
+  ];
+}
 
 const DRAFT_KEY = "angebotplus_draft";
 
@@ -15,38 +17,37 @@ const DRAFT_KEY = "angebotplus_draft";
 // hosted separately (e.g. on Vercel) without breaking API calls.
 const API_BASE = "https://angebot-plus-b2b.onrender.com";
 
-// Per-document-type texts. Keys must match the backend's DOC_TYPE_PREFIXES / DOC_TYPE_TEXTS.
-const DOC_TYPES = {
-  angebot: {
-    label: "Angebot",
-    docTitle: "Angebot",
-    numberLabel: "Angebotsnummer",
-    fieldLabel: "Gültigkeit (Tage)",
-    metaLabel3: "Gültig bis",
-    intro: "Sehr geehrte Damen und Herren,<br/>vielen Dank für Ihre Anfrage. Wir unterbreiten Ihnen gerne folgendes Angebot:",
-    closing: (d) => `Zahlbar innerhalb von 14 Tagen ohne Abzug. Dieses Angebot ist gültig bis ${d}.<br/>Wir freuen uns auf Ihren Auftrag.`,
-  },
-  rechnung: {
-    label: "Rechnung",
-    docTitle: "Rechnung",
-    numberLabel: "Rechnungsnummer",
-    fieldLabel: "Zahlungsfrist (Tage)",
-    metaLabel3: "Zahlbar bis",
-    intro: "Sehr geehrte Damen und Herren,<br/>für die erbrachten Leistungen stellen wir Ihnen wie folgt in Rechnung:",
-    closing: (d) => `Bitte überweisen Sie den Rechnungsbetrag bis zum ${d} unter Angabe der Rechnungsnummer auf u. g. Konto.<br/>Vielen Dank für Ihr Vertrauen.`,
-  },
-  auftragsbestaetigung: {
-    label: "Auftragsbestätigung",
-    docTitle: "Auftragsbestätigung",
-    numberLabel: "Auftragsnummer",
-    fieldLabel: "Ausführungsfrist (Tage)",
-    metaLabel3: "Ausführung bis",
-    intro: "Sehr geehrte Damen und Herren,<br/>hiermit bestätigen wir den folgenden Auftrag gemäß Ihrer Bestellung:",
-    closing: (d) => `Die Ausführung erfolgt voraussichtlich bis zum ${d}.<br/>Wir freuen uns auf die Zusammenarbeit.`,
-  },
+// Backend error details (always German) mapped to translation keys, so the UI
+// stays consistent with the selected language even for server-side errors.
+const BACKEND_ERROR_KEYS = {
+  "Mindestens eine Position ist erforderlich.": "backendError.itemRequired",
+  "Angebotsnummer existiert bereits.": "backendError.numberExists",
+  "Angebot nicht gefunden.": "backendError.notFound",
 };
 
-const state = { documentType: "angebot" };
+// Per-document-type texts, built from the active language's translations.
+// Keys must match the backend's DOC_TYPE_PREFIXES / DOC_TYPE_TEXTS.
+function buildDocTypes() {
+  const types = ["angebot", "rechnung", "auftragsbestaetigung"];
+  const result = {};
+  types.forEach((type) => {
+    result[type] = {
+      label: t(`docTypes.${type}.label`),
+      docTitle: t(`docTypes.${type}.docTitle`),
+      numberLabel: t(`docTypes.${type}.numberLabel`),
+      fieldLabel: t(`docTypes.${type}.fieldLabel`),
+      metaLabel3: t(`docTypes.${type}.metaLabel3`),
+      intro: t(`docTypes.${type}.intro`),
+      closing: (d) => t(`docTypes.${type}.closing`, { date: d }),
+    };
+  });
+  return result;
+}
+
+const state = { documentType: "angebot", language: DEFAULT_LANG };
+window.currentLang = DEFAULT_LANG;
+let UNIT_OPTIONS = buildUnitOptions();
+let DOC_TYPES = buildDocTypes();
 
 const els = {
   form: document.getElementById("offer-form"),
@@ -75,30 +76,31 @@ const els = {
   btnLoadDemo: document.getElementById("btn-load-demo"),
   labelOfferNumber: document.getElementById("label-offer-number"),
   labelValidityDays: document.getElementById("label-validity-days"),
+  langButtons: document.querySelectorAll(".lang-btn"),
 };
 
 // ------------------------------- Formatting -------------------------------
-const eurFmt = new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" });
-const numFmt = new Intl.NumberFormat("de-DE", { maximumFractionDigits: 2 });
-
+function getLocale() {
+  return LOCALE_MAP[state.language] || LOCALE_MAP[DEFAULT_LANG];
+}
 function fmtEUR(v) {
-  return eurFmt.format(Number.isFinite(v) ? v : 0);
+  return new Intl.NumberFormat(getLocale(), { style: "currency", currency: "EUR" }).format(Number.isFinite(v) ? v : 0);
 }
 function fmtQty(v) {
-  return numFmt.format(Number.isFinite(v) ? v : 0);
+  return new Intl.NumberFormat(getLocale(), { maximumFractionDigits: 2 }).format(Number.isFinite(v) ? v : 0);
 }
-function fmtDateDE(iso) {
-  if (!iso) return "–";
+function fmtDate(iso) {
+  if (!iso) return t("preview.dash");
   const d = new Date(`${iso}T00:00:00`);
-  if (isNaN(d)) return "–";
-  return d.toLocaleDateString("de-DE");
+  if (isNaN(d)) return t("preview.dash");
+  return d.toLocaleDateString(getLocale());
 }
-function validUntilDE(iso, days) {
-  if (!iso) return "–";
+function validUntil(iso, days) {
+  if (!iso) return t("preview.dash");
   const d = new Date(`${iso}T00:00:00`);
-  if (isNaN(d)) return "–";
+  if (isNaN(d)) return t("preview.dash");
   d.setDate(d.getDate() + (parseInt(days, 10) || 0));
-  return d.toLocaleDateString("de-DE");
+  return d.toLocaleDateString(getLocale());
 }
 function unitLabel(value) {
   return (UNIT_OPTIONS.find((u) => u.value === value) || {}).label || value;
@@ -145,14 +147,14 @@ function makeItemRow(item = { description: "", quantity: 1, unit: "Stk", unit_pr
   const row = document.createElement("div");
   row.className = "item-row";
   row.innerHTML = `
-    <input class="ir-desc" type="text" placeholder="z. B. Montage Steckdose" value="${escapeAttr(item.description)}" />
+    <input class="ir-desc" type="text" placeholder="${escapeAttr(t("form.items.descPlaceholder"))}" value="${escapeAttr(item.description)}" />
     <input class="ir-qty" type="number" min="0" step="0.5" value="${item.quantity}" />
     <select class="ir-unit">
       ${UNIT_OPTIONS.map((u) => `<option value="${u.value}" ${u.value === item.unit ? "selected" : ""}>${u.label}</option>`).join("")}
     </select>
     <input class="ir-price" type="number" min="0" step="0.01" value="${item.unit_price}" />
     <div class="ir-total-value">${fmtEUR(item.quantity * item.unit_price)}</div>
-    <button type="button" class="ir-del-btn" title="Position entfernen">
+    <button type="button" class="ir-del-btn" title="${escapeAttr(t("form.items.removeTitle"))}">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
   `;
@@ -164,7 +166,7 @@ function makeItemRow(item = { description: "", quantity: 1, unit: "Stk", unit_pr
   });
   row.querySelector(".ir-del-btn").addEventListener("click", () => {
     if (els.itemsContainer.children.length <= 1) {
-      showToast("Mindestens eine Position ist erforderlich.", "error");
+      showToast(t("toast.minOneItem"), "error");
       return;
     }
     row.remove();
@@ -269,17 +271,17 @@ function renderPreview() {
     ? `${data.provider.name} · ${providerAddrOneLine}`
     : "";
 
-  document.getElementById("pv-offer-number").textContent = data.offer_number || "–";
-  document.getElementById("pv-offer-date").textContent = fmtDateDE(data.offer_date);
-  const validUntil = validUntilDE(data.offer_date, data.validity_days);
-  document.getElementById("pv-valid-until").textContent = validUntil;
+  document.getElementById("pv-offer-number").textContent = data.offer_number || t("preview.dash");
+  document.getElementById("pv-offer-date").textContent = fmtDate(data.offer_date);
+  const validUntilStr = validUntil(data.offer_date, data.validity_days);
+  document.getElementById("pv-valid-until").textContent = validUntilStr;
 
   const dt = DOC_TYPES[state.documentType] || DOC_TYPES.angebot;
   document.getElementById("pv-doc-title").textContent = dt.docTitle;
   document.getElementById("pv-intro").innerHTML = dt.intro;
   document.getElementById("pv-number-label").textContent = dt.numberLabel;
   document.getElementById("pv-meta3-label").textContent = dt.metaLabel3;
-  document.getElementById("pv-closing").innerHTML = dt.closing(validUntil);
+  document.getElementById("pv-closing").innerHTML = dt.closing(validUntilStr);
 
   const clientLines = [data.client.name, data.client.company, ...(data.client.address || "").split("\n")].filter(Boolean);
   document.getElementById("pv-client").innerHTML = clientLines.map(escapeHtml).join("<br/>") || "&nbsp;";
@@ -300,25 +302,28 @@ function renderPreview() {
     .join("");
 
   const totalsBody = document.getElementById("pv-totals");
-  let rowsHtml = `<tr><td>Nettobetrag</td><td class="al-r">${fmtEUR(totals.subtotal_net)}</td></tr>`;
+  let rowsHtml = `<tr><td>${t("preview.totals.net")}</td><td class="al-r">${fmtEUR(totals.subtotal_net)}</td></tr>`;
   if (data.discount_percent) {
-    rowsHtml += `<tr><td>Rabatt (${data.discount_percent}%)</td><td class="al-r">− ${fmtEUR(totals.discount_amount)}</td></tr>`;
-    rowsHtml += `<tr><td>Zwischensumme</td><td class="al-r">${fmtEUR(totals.net_after_discount)}</td></tr>`;
+    rowsHtml += `<tr><td>${t("preview.totals.discount", { pct: data.discount_percent })}</td><td class="al-r">− ${fmtEUR(totals.discount_amount)}</td></tr>`;
+    rowsHtml += `<tr><td>${t("preview.totals.subtotal")}</td><td class="al-r">${fmtEUR(totals.net_after_discount)}</td></tr>`;
   }
   if (data.vat_rate > 0) {
-    rowsHtml += `<tr><td>zzgl. MwSt. (${data.vat_rate}%)</td><td class="al-r">${fmtEUR(totals.vat_amount)}</td></tr>`;
+    rowsHtml += `<tr><td>${t("preview.totals.vat", { rate: data.vat_rate })}</td><td class="al-r">${fmtEUR(totals.vat_amount)}</td></tr>`;
   } else {
-    rowsHtml += `<tr><td>Umsatzsteuer</td><td class="al-r">${fmtEUR(0)}</td></tr>`;
+    rowsHtml += `<tr><td>${t("preview.totals.vatZero")}</td><td class="al-r">${fmtEUR(0)}</td></tr>`;
   }
-  rowsHtml += `<tr class="total-row"><td>Gesamtbetrag brutto</td><td class="al-r">${fmtEUR(totals.gross_total)}</td></tr>`;
+  rowsHtml += `<tr class="total-row"><td>${t("preview.totals.grossTotal")}</td><td class="al-r">${fmtEUR(totals.gross_total)}</td></tr>`;
   totalsBody.innerHTML = rowsHtml;
 
   document.getElementById("pv-note").textContent =
-    data.vat_rate === 0 ? "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet (Kleinunternehmerregelung)." : "";
+    data.vat_rate === 0 ? t("preview.note.kleinunternehmer") : "";
 
   document.getElementById("pv-footer-name").textContent = data.provider.name || "";
-  document.getElementById("pv-footer-line").textContent =
-    `USt-IdNr./Steuernr.: ${data.provider.tax_id || "–"}    IBAN: ${data.provider.iban || "–"}    E-Mail: ${data.provider.email || "–"}`;
+  document.getElementById("pv-footer-line").textContent = t("preview.taxLine", {
+    tax: data.provider.tax_id || t("preview.dash"),
+    iban: data.provider.iban || t("preview.dash"),
+    email: data.provider.email || t("preview.dash"),
+  });
 }
 
 // ------------------------------- API calls -------------------------------
@@ -329,7 +334,7 @@ async function fetchNextOfferNumber() {
     const data = await res.json();
     els.offerNumber.value = data.offer_number;
   } catch {
-    showToast("Nummer konnte nicht geladen werden.", "error");
+    showToast(t("toast.numberLoadError"), "error");
   }
 }
 
@@ -338,11 +343,11 @@ async function submitOffer(e) {
   const data = collectFormData();
 
   if (!data.provider.name || !data.client.name || !data.client.address) {
-    showToast("Bitte alle Pflichtfelder ausfüllen.", "error");
+    showToast(t("toast.requiredFields"), "error");
     return;
   }
   if (!data.items.length || data.items.every((i) => !i.description)) {
-    showToast("Bitte mindestens eine Position mit Beschreibung angeben.", "error");
+    showToast(t("toast.itemDescriptionRequired"), "error");
     return;
   }
 
@@ -356,7 +361,8 @@ async function submitOffer(e) {
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || "PDF konnte nicht erstellt werden.");
+      const mappedKey = BACKEND_ERROR_KEYS[err.detail];
+      throw new Error(mappedKey ? t(mappedKey) : t("backendError.generic"));
     }
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -367,11 +373,11 @@ async function submitOffer(e) {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    showToast("Angebot gespeichert & PDF heruntergeladen.", "success");
+    showToast(t("toast.offerSaved"), "success");
     localStorage.removeItem(DRAFT_KEY);
     await fetchNextOfferNumber();
   } catch (err) {
-    showToast(err.message || "Fehler beim Erstellen des Angebots.", "error");
+    showToast(err.message || t("toast.genericError"), "error");
   } finally {
     els.btnGenerate.disabled = false;
     els.btnGenerate.classList.remove("opacity-60");
@@ -381,7 +387,7 @@ async function submitOffer(e) {
 function saveDraft() {
   const data = collectFormData();
   localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-  showToast("Entwurf lokal gespeichert.", "success");
+  showToast(t("toast.draftSaved"), "success");
 }
 
 function loadDraftIfPresent() {
@@ -425,7 +431,7 @@ async function loadDemoData() {
   });
   await fetchNextOfferNumber();
   renderPreview();
-  showToast("Demo-Daten geladen.", "success");
+  showToast(t("toast.demoLoaded"), "success");
 }
 
 // ------------------------------- History modal -------------------------------
@@ -446,18 +452,18 @@ async function openHistory() {
       <div class="history-row" data-id="${o.id}">
         <div>
           <div class="history-number">${escapeHtml(o.offer_number)}<span class="doctype-badge">${(DOC_TYPES[o.document_type] || DOC_TYPES.angebot).label}</span></div>
-          <div class="history-meta">${escapeHtml(o.client_company || o.client_name)} · ${fmtDateDE(o.offer_date)} · ${fmtEUR(o.gross_total)}</div>
+          <div class="history-meta">${escapeHtml(o.client_company || o.client_name)} · ${fmtDate(o.offer_date)} · ${fmtEUR(o.gross_total)}</div>
         </div>
         <div class="history-actions">
-          <button class="history-btn" data-action="load" data-id="${o.id}">Laden</button>
-          <button class="history-btn primary" data-action="pdf" data-id="${o.id}">PDF</button>
-          <button class="history-btn danger" data-action="delete" data-id="${o.id}">Löschen</button>
+          <button class="history-btn" data-action="load" data-id="${o.id}">${t("history.load")}</button>
+          <button class="history-btn primary" data-action="pdf" data-id="${o.id}">${t("history.pdf")}</button>
+          <button class="history-btn danger" data-action="delete" data-id="${o.id}">${t("history.delete")}</button>
         </div>
       </div>`
       )
       .join("");
   } catch {
-    showToast("Historie konnte nicht geladen werden.", "error");
+    showToast(t("toast.historyLoadError"), "error");
   }
 }
 
@@ -482,24 +488,67 @@ els.historyList?.addEventListener("click", async (e) => {
       const offer = await res.json();
       populateForm(offer);
       closeHistory();
-      showToast(`Angebot ${offer.offer_number} geladen.`, "success");
+      showToast(t("toast.offerLoaded", { number: offer.offer_number }), "success");
     } catch {
-      showToast("Angebot konnte nicht geladen werden.", "error");
+      showToast(t("toast.offerLoadError"), "error");
     }
     return;
   }
   if (action === "delete") {
-    if (!confirm("Dieses Angebot wirklich löschen?")) return;
+    if (!confirm(t("common.confirmDeleteOffer"))) return;
     try {
       const res = await fetch(`${API_BASE}/api/offers/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
-      showToast("Angebot gelöscht.", "success");
+      showToast(t("toast.offerDeleted"), "success");
       openHistory();
     } catch {
-      showToast("Löschen fehlgeschlagen.", "error");
+      showToast(t("toast.deleteFailed"), "error");
     }
   }
 });
+
+// ------------------------------- Language switching -------------------------------
+function applyTranslations() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    el.textContent = t(el.getAttribute("data-i18n"));
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    el.setAttribute("placeholder", t(el.getAttribute("data-i18n-placeholder")));
+  });
+  document.querySelectorAll("[data-i18n-aria-label]").forEach((el) => {
+    el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria-label")));
+  });
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.lang === state.language);
+  });
+  document.documentElement.lang = state.language;
+}
+
+function refreshItemRowTranslations() {
+  els.itemsContainer.querySelectorAll(".item-row").forEach((row) => {
+    row.querySelector(".ir-desc").setAttribute("placeholder", t("form.items.descPlaceholder"));
+    row.querySelector(".ir-del-btn").setAttribute("title", t("form.items.removeTitle"));
+    const select = row.querySelector(".ir-unit");
+    const current = select.value;
+    select.innerHTML = UNIT_OPTIONS.map((u) => `<option value="${u.value}" ${u.value === current ? "selected" : ""}>${u.label}</option>`).join("");
+    updateRowTotal(row);
+  });
+}
+
+function setLanguage(lang) {
+  if (!SUPPORTED_LANGS.includes(lang)) lang = DEFAULT_LANG;
+  state.language = lang;
+  window.currentLang = lang;
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+  } catch {}
+  UNIT_OPTIONS = buildUnitOptions();
+  DOC_TYPES = buildDocTypes();
+  applyTranslations();
+  refreshItemRowTranslations();
+  setDocumentType(state.documentType, { refreshNumber: false, rerender: false });
+  renderPreview();
+}
 
 // ------------------------------- Mobile tabs -------------------------------
 function setMobileTab(tab) {
@@ -536,9 +585,13 @@ els.historyModal.addEventListener("click", (e) => {
 });
 els.tabForm?.addEventListener("click", () => setMobileTab("form"));
 els.tabPreview?.addEventListener("click", () => setMobileTab("preview"));
+document.querySelectorAll(".lang-btn").forEach((btn) => {
+  btn.addEventListener("click", () => setLanguage(btn.dataset.lang));
+});
 
 // ------------------------------- Init -------------------------------
 (async function init() {
+  setLanguage(getStoredLang());
   els.offerDate.value = new Date().toISOString().slice(0, 10);
   const restored = loadDraftIfPresent();
   if (!restored) {

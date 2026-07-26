@@ -126,6 +126,44 @@ body { background: var(--coolgray); }
 }
 #app-shell.app-shell-visible { opacity: 1; }
 
+/* ------------------------------ Language switcher ------------------------------ */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9px;
+  padding: 3px;
+}
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: #CBD5E1;
+  transition: background .15s, color .15s;
+}
+.lang-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
+.lang-btn.active { background: var(--emerald); color: #fff; }
+.lang-flag { font-size: 14px; line-height: 1; }
+
+.lang-switch-landing {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+@media (max-width: 420px) {
+  header .lang-switch .lang-code { display: none; }
+  header .lang-switch .lang-btn { padding: 6px 7px; }
+}
+
 /* ------------------------------ Document type switcher ------------------------------ */
 .doctype-bar {
   background: #fff;

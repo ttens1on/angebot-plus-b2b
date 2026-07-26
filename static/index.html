@@ -32,15 +32,22 @@
 <!-- ============================== LANDING / HERO ============================== -->
 <section id="landing" class="landing">
   <div class="landing-bg"></div>
+
+  <div class="lang-switch lang-switch-landing" role="group" aria-label="Language switcher">
+    <button type="button" class="lang-btn" data-lang="de"><span class="lang-flag">🇩🇪</span><span class="lang-code">DE</span></button>
+    <button type="button" class="lang-btn" data-lang="en"><span class="lang-flag">🇬🇧</span><span class="lang-code">EN</span></button>
+    <button type="button" class="lang-btn" data-lang="ru"><span class="lang-flag">🇷🇺</span><span class="lang-code">RU</span></button>
+  </div>
+
   <div class="landing-inner">
     <div class="landing-badge">
       <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span>
-      Live Demo · Enterprise SaaS Showcase
+      <span data-i18n="landing.badge">Live Demo · Enterprise SaaS Showcase</span>
     </div>
-    <h1 class="landing-title">Professionelle Angebote, Rechnungen &amp; Auftragsbestätigungen – in Minuten statt Stunden.</h1>
-    <p class="landing-sub">AngebotPlus B2B erstellt rechtssichere, DIN&nbsp;5008-orientierte B2B-Dokumente mit automatischer MwSt-Berechnung, Live-Vorschau und PDF-Export – direkt im Browser, ohne Word oder Excel.</p>
+    <h1 class="landing-title" data-i18n="landing.title">Professionelle Angebote, Rechnungen &amp; Auftragsbestätigungen – in Minuten statt Stunden.</h1>
+    <p class="landing-sub" data-i18n="landing.sub">AngebotPlus B2B erstellt rechtssichere, DIN&nbsp;5008-orientierte B2B-Dokumente mit automatischer MwSt-Berechnung, Live-Vorschau und PDF-Export – direkt im Browser, ohne Word oder Excel.</p>
     <button id="btn-start" type="button" class="landing-cta">
-      Angebot erstellen / Jetzt starten
+      <span data-i18n="landing.cta">Angebot erstellen / Jetzt starten</span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
 
@@ -49,29 +56,29 @@
         <div class="landing-feature-icon">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>
         </div>
-        <div class="landing-feature-title">Live A4-Vorschau</div>
-        <div class="landing-feature-desc">Sehen Sie Ihr Dokument in Echtzeit, während Sie tippen.</div>
+        <div class="landing-feature-title" data-i18n="landing.feature1.title">Live A4-Vorschau</div>
+        <div class="landing-feature-desc" data-i18n="landing.feature1.desc">Sehen Sie Ihr Dokument in Echtzeit, während Sie tippen.</div>
       </div>
       <div class="landing-feature">
         <div class="landing-feature-icon">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
         </div>
-        <div class="landing-feature-title">3 Dokumenttypen</div>
-        <div class="landing-feature-desc">Angebot, Rechnung und Auftragsbestätigung aus einem Formular.</div>
+        <div class="landing-feature-title" data-i18n="landing.feature2.title">3 Dokumenttypen</div>
+        <div class="landing-feature-desc" data-i18n="landing.feature2.desc">Angebot, Rechnung und Auftragsbestätigung aus einem Formular.</div>
       </div>
       <div class="landing-feature">
         <div class="landing-feature-icon">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="1.5"/><circle cx="17" cy="17" r="1.5"/><path d="M19 5 5 19"/></svg>
         </div>
-        <div class="landing-feature-title">Automatische MwSt.</div>
-        <div class="landing-feature-desc">19&nbsp;%, 7&nbsp;% oder §19 UStG – korrekt berechnet, jedes Mal.</div>
+        <div class="landing-feature-title" data-i18n="landing.feature3.title">Automatische MwSt.</div>
+        <div class="landing-feature-desc" data-i18n="landing.feature3.desc">19&nbsp;%, 7&nbsp;% oder §19 UStG – korrekt berechnet, jedes Mal.</div>
       </div>
       <div class="landing-feature">
         <div class="landing-feature-icon">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M6 9l6 6 6-6"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
         </div>
-        <div class="landing-feature-title">PDF in einem Klick</div>
-        <div class="landing-feature-desc">Fertiges, druckreifes Dokument direkt zum Download.</div>
+        <div class="landing-feature-title" data-i18n="landing.feature4.title">PDF in einem Klick</div>
+        <div class="landing-feature-desc" data-i18n="landing.feature4.desc">Fertiges, druckreifes Dokument direkt zum Download.</div>
       </div>
     </div>
   </div>
@@ -86,26 +93,31 @@
       <div class="w-9 h-9 rounded-lg bg-emerald flex items-center justify-center font-extrabold text-white text-lg shrink-0">A+</div>
       <div class="leading-tight">
         <div class="font-bold text-[15px] sm:text-base tracking-tight">AngebotPlus B2B</div>
-        <div class="text-[11px] text-slate-400 hidden sm:block">Smart Offer &amp; PDF Generator für Handwerk &amp; B2B</div>
+        <div class="text-[11px] text-slate-400 hidden sm:block" data-i18n="header.subtitle">Smart Offer &amp; PDF Generator für Handwerk &amp; B2B</div>
       </div>
       <span class="hidden md:inline-flex items-center gap-1.5 ml-3 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] font-medium text-slate-200">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span>
-        Live Demo | Enterprise SaaS Showcase
+        <span data-i18n="header.badge">Live Demo | Enterprise SaaS Showcase</span>
       </span>
     </div>
     <div class="flex items-center gap-2">
+      <div class="lang-switch" role="group" aria-label="Language switcher">
+        <button type="button" class="lang-btn" data-lang="de"><span class="lang-flag">🇩🇪</span><span class="lang-code">DE</span></button>
+        <button type="button" class="lang-btn" data-lang="en"><span class="lang-flag">🇬🇧</span><span class="lang-code">EN</span></button>
+        <button type="button" class="lang-btn" data-lang="ru"><span class="lang-flag">🇷🇺</span><span class="lang-code">RU</span></button>
+      </div>
       <button id="btn-history" type="button"
         class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-sm font-medium transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></svg>
-        <span class="hidden sm:inline">Gespeicherte Angebote</span>
-        <span class="sm:hidden">Historie</span>
+        <span class="hidden sm:inline" data-i18n="header.historyFull">Gespeicherte Angebote</span>
+        <span class="sm:hidden" data-i18n="header.historyShort">Historie</span>
       </button>
     </div>
   </div>
   <div class="md:hidden px-4 pb-2 -mt-1">
     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] font-medium text-slate-200">
       <span class="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse"></span>
-      Live Demo | Enterprise SaaS Showcase
+      <span data-i18n="header.badge">Live Demo | Enterprise SaaS Showcase</span>
     </span>
   </div>
 </header>
@@ -113,22 +125,22 @@
 <!-- ========================= DOCUMENT TYPE BAR ========================= -->
 <div class="doctype-bar">
   <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-    <div class="doctype-switch" role="group" aria-label="Dokumenttyp auswählen">
-      <button type="button" class="doctype-btn active" data-type="angebot">Angebot</button>
-      <button type="button" class="doctype-btn" data-type="rechnung">Rechnung</button>
-      <button type="button" class="doctype-btn" data-type="auftragsbestaetigung">Auftragsbestätigung</button>
+    <div class="doctype-switch" role="group" data-i18n-aria-label="doctype.ariaLabel" aria-label="Dokumenttyp auswählen">
+      <button type="button" class="doctype-btn active" data-type="angebot" data-i18n="doctype.angebot">Angebot</button>
+      <button type="button" class="doctype-btn" data-type="rechnung" data-i18n="doctype.rechnung">Rechnung</button>
+      <button type="button" class="doctype-btn" data-type="auftragsbestaetigung" data-i18n="doctype.auftragsbestaetigung">Auftragsbestätigung</button>
     </div>
     <button type="button" id="btn-load-demo" class="btn-demo">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
-      Demo-Daten laden
+      <span data-i18n="doctype.loadDemo">Demo-Daten laden</span>
     </button>
   </div>
 </div>
 
 <!-- ======================= MOBILE TAB SWITCHER ======================== -->
 <div class="lg:hidden sticky top-[57px] z-30 bg-white border-b border-bordergray flex">
-  <button id="tab-form" class="flex-1 py-3 text-sm font-semibold border-b-2 border-navy text-navy" data-tab="form">Formular bearbeiten</button>
-  <button id="tab-preview" class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400" data-tab="preview">PDF-Vorschau</button>
+  <button id="tab-form" class="flex-1 py-3 text-sm font-semibold border-b-2 border-navy text-navy" data-tab="form" data-i18n="tab.form">Formular bearbeiten</button>
+  <button id="tab-preview" class="flex-1 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400" data-tab="preview" data-i18n="tab.preview">PDF-Vorschau</button>
 </div>
 
 <!-- ============================== MAIN ================================ -->
@@ -141,28 +153,28 @@
       <!-- Anbieter -->
       <fieldset class="card">
         <legend class="card-title">
-          <span class="step-badge">1</span> Anbieter <span class="text-slate-400 font-normal">(Ihr Unternehmen)</span>
+          <span class="step-badge">1</span> <span data-i18n="form.provider.title">Anbieter</span> <span class="text-slate-400 font-normal" data-i18n="form.provider.subtitle">(Ihr Unternehmen)</span>
         </legend>
         <div class="grid sm:grid-cols-2 gap-4">
           <label class="field sm:col-span-2">
-            <span>Firmenname</span>
-            <input type="text" name="provider_name" required placeholder="Musterhandwerk GmbH" value="Musterhandwerk GmbH" />
+            <span data-i18n="form.provider.name">Firmenname</span>
+            <input type="text" name="provider_name" required data-i18n-placeholder="form.provider.namePlaceholder" placeholder="Musterhandwerk GmbH" value="Musterhandwerk GmbH" />
           </label>
           <label class="field sm:col-span-2">
-            <span>Adresse</span>
-            <textarea name="provider_address" rows="2" required placeholder="Musterstraße 12&#10;10115 Berlin">Musterstraße 12
+            <span data-i18n="form.provider.address">Adresse</span>
+            <textarea name="provider_address" rows="2" required data-i18n-placeholder="form.provider.addressPlaceholder" placeholder="Musterstraße 12&#10;10115 Berlin">Musterstraße 12
 10115 Berlin</textarea>
           </label>
           <label class="field">
-            <span>Steuernummer / USt-IdNr.</span>
+            <span data-i18n="form.provider.taxId">Steuernummer / USt-IdNr.</span>
             <input type="text" name="provider_tax_id" placeholder="DE123456789" value="DE123456789" />
           </label>
           <label class="field">
-            <span>IBAN</span>
+            <span data-i18n="form.provider.iban">IBAN</span>
             <input type="text" name="provider_iban" placeholder="DE12 3456 7890 1234 5678 90" value="DE12 3456 7890 1234 5678 90" />
           </label>
           <label class="field sm:col-span-2">
-            <span>Kontakt-E-Mail</span>
+            <span data-i18n="form.provider.email">Kontakt-E-Mail</span>
             <input type="email" name="provider_email" placeholder="kontakt@musterhandwerk.de" value="kontakt@musterhandwerk.de" />
           </label>
         </div>
@@ -170,33 +182,33 @@
 
       <!-- Empfänger -->
       <fieldset class="card">
-        <legend class="card-title"><span class="step-badge">2</span> Empfänger <span class="text-slate-400 font-normal">(Kunde)</span></legend>
+        <legend class="card-title"><span class="step-badge">2</span> <span data-i18n="form.client.title">Empfänger</span> <span class="text-slate-400 font-normal" data-i18n="form.client.subtitle">(Kunde)</span></legend>
         <div class="grid sm:grid-cols-2 gap-4">
           <label class="field">
-            <span>Name</span>
-            <input type="text" name="client_name" required placeholder="Max Mustermann" />
+            <span data-i18n="form.client.name">Name</span>
+            <input type="text" name="client_name" required data-i18n-placeholder="form.client.namePlaceholder" placeholder="Max Mustermann" />
           </label>
           <label class="field">
-            <span>Firma <span class="opt">(optional)</span></span>
-            <input type="text" name="client_company" placeholder="Mustermann Immobilien KG" />
+            <span><span data-i18n="form.client.company">Firma</span> <span class="opt" data-i18n="common.optional">(optional)</span></span>
+            <input type="text" name="client_company" data-i18n-placeholder="form.client.companyPlaceholder" placeholder="Mustermann Immobilien KG" />
           </label>
           <label class="field sm:col-span-2">
-            <span>Adresse</span>
-            <textarea name="client_address" rows="2" required placeholder="Beispielweg 4&#10;80331 München"></textarea>
+            <span data-i18n="form.client.address">Adresse</span>
+            <textarea name="client_address" rows="2" required data-i18n-placeholder="form.client.addressPlaceholder" placeholder="Beispielweg 4&#10;80331 München"></textarea>
           </label>
         </div>
       </fieldset>
 
       <!-- Angebotsmetadaten -->
       <fieldset class="card">
-        <legend class="card-title"><span class="step-badge">3</span> Dokumentdaten</legend>
+        <legend class="card-title"><span class="step-badge">3</span> <span data-i18n="form.meta.title">Dokumentdaten</span></legend>
         <div class="grid sm:grid-cols-3 gap-4">
           <label class="field">
             <span id="label-offer-number">Angebotsnummer</span>
             <input type="text" name="offer_number" id="offer_number" required />
           </label>
           <label class="field">
-            <span>Datum</span>
+            <span data-i18n="form.meta.date">Datum</span>
             <input type="date" name="offer_date" id="offer_date" required />
           </label>
           <label class="field">
@@ -208,32 +220,32 @@
 
       <!-- Positionen -->
       <fieldset class="card">
-        <legend class="card-title"><span class="step-badge">4</span> Positionen</legend>
+        <legend class="card-title"><span class="step-badge">4</span> <span data-i18n="form.items.title">Positionen</span></legend>
         <div class="hidden sm:grid grid-cols-[1fr_70px_90px_100px_100px_32px] gap-2 px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
-          <span>Beschreibung</span><span>Menge</span><span>Einheit</span><span>Preis/Einh.</span><span>Gesamt</span><span></span>
+          <span data-i18n="form.items.header.description">Beschreibung</span><span data-i18n="form.items.header.qty">Menge</span><span data-i18n="form.items.header.unit">Einheit</span><span data-i18n="form.items.header.price">Preis/Einh.</span><span data-i18n="form.items.header.total">Gesamt</span><span></span>
         </div>
         <div id="items-container" class="space-y-2"></div>
         <button type="button" id="btn-add-item"
           class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-navy hover:text-emerald transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Position hinzufügen
+          <span data-i18n="form.items.addButton">Position hinzufügen</span>
         </button>
       </fieldset>
 
       <!-- MwSt & Rabatt -->
       <fieldset class="card">
-        <legend class="card-title"><span class="step-badge">5</span> Steuern &amp; Rabatt</legend>
+        <legend class="card-title"><span class="step-badge">5</span> <span data-i18n="form.tax.title">Steuern &amp; Rabatt</span></legend>
         <div class="grid sm:grid-cols-2 gap-4">
           <label class="field">
-            <span>MwSt.-Satz</span>
+            <span data-i18n="form.tax.vatRate">MwSt.-Satz</span>
             <select name="vat_rate" id="vat_rate">
-              <option value="19" selected>19 % (Standard)</option>
-              <option value="7">7 % (Ermäßigt)</option>
-              <option value="0">0 % (§19 UStG Kleinunternehmer)</option>
+              <option value="19" selected data-i18n="form.tax.vat19">19 % (Standard)</option>
+              <option value="7" data-i18n="form.tax.vat7">7 % (Ermäßigt)</option>
+              <option value="0" data-i18n="form.tax.vat0">0 % (§19 UStG Kleinunternehmer)</option>
             </select>
           </label>
           <label class="field">
-            <span>Rabatt (%) <span class="opt">(optional)</span></span>
+            <span><span data-i18n="form.tax.discount">Rabatt (%)</span> <span class="opt" data-i18n="common.optional">(optional)</span></span>
             <input type="number" name="discount_percent" id="discount_percent" min="0" max="100" step="0.5" value="0" />
           </label>
         </div>
@@ -244,12 +256,12 @@
         <button type="submit" id="btn-generate"
           class="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald hover:bg-emerald2 text-white font-semibold text-sm shadow-md shadow-emerald/20 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M6 9l6 6 6-6"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
-          Angebot als PDF generieren &amp; Speichern
+          <span data-i18n="form.actions.generate">Angebot als PDF generieren &amp; Speichern</span>
         </button>
         <button type="button" id="btn-draft"
           class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white border border-bordergray hover:border-navy text-navy font-semibold text-sm transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
-          Entwurf speichern
+          <span data-i18n="form.actions.saveDraft">Entwurf speichern</span>
         </button>
       </div>
     </form>
@@ -258,8 +270,8 @@
   <!-- --------------------------- PREVIEW PANEL --------------------------- -->
   <section id="panel-preview" class="hidden lg:block px-4 sm:px-6 py-6 lg:pl-8 bg-coolgray max-h-[calc(100vh-57px)] lg:overflow-y-auto">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide">Live-Vorschau · A4</h2>
-      <span class="text-[11px] text-slate-400">Aktualisiert in Echtzeit</span>
+      <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide" data-i18n="preview.title">Live-Vorschau · A4</h2>
+      <span class="text-[11px] text-slate-400" data-i18n="preview.liveBadge">Aktualisiert in Echtzeit</span>
     </div>
 
     <div id="a4-wrapper" class="a4-wrapper">
@@ -269,7 +281,7 @@
           <div id="pv-sender" class="a4-sender"></div>
           <table class="a4-meta">
             <tr><td id="pv-number-label" class="a4-meta-label">Angebotsnummer</td><td id="pv-offer-number" class="a4-meta-value"></td></tr>
-            <tr><td class="a4-meta-label">Datum</td><td id="pv-offer-date" class="a4-meta-value"></td></tr>
+            <tr><td class="a4-meta-label" data-i18n="preview.meta.date">Datum</td><td id="pv-offer-date" class="a4-meta-value"></td></tr>
             <tr><td id="pv-meta3-label" class="a4-meta-label">Gültig bis</td><td id="pv-valid-until" class="a4-meta-value"></td></tr>
           </table>
         </div>
@@ -282,8 +294,8 @@
         <table class="a4-items">
           <thead>
             <tr>
-              <th class="al-c">Pos.</th><th>Beschreibung</th><th class="al-r">Menge</th>
-              <th class="al-r">Einheit</th><th class="al-r">Einzelpreis</th><th class="al-r">Gesamtpreis</th>
+              <th class="al-c" data-i18n="preview.items.header.pos">Pos.</th><th data-i18n="preview.items.header.description">Beschreibung</th><th class="al-r" data-i18n="preview.items.header.qty">Menge</th>
+              <th class="al-r" data-i18n="preview.items.header.unit">Einheit</th><th class="al-r" data-i18n="preview.items.header.unitPrice">Einzelpreis</th><th class="al-r" data-i18n="preview.items.header.total">Gesamtpreis</th>
             </tr>
           </thead>
           <tbody id="pv-items"></tbody>
@@ -300,7 +312,7 @@
         <div class="a4-footer">
           <div class="a4-footer-name" id="pv-footer-name"></div>
           <div class="a4-footer-line" id="pv-footer-line"></div>
-          <div class="a4-footer-demo">Dies ist eine interaktive Demo-Anwendung zu Portfolio-Zwecken. Alle Angaben ohne Gewähr.</div>
+          <div class="a4-footer-demo" data-i18n="preview.footerDemo">Dies ist eine interaktive Demo-Anwendung zu Portfolio-Zwecken. Alle Angaben ohne Gewähr.</div>
         </div>
       </div>
     </div>
@@ -315,11 +327,11 @@
 <div id="history-modal" class="modal-overlay hidden">
   <div class="modal-box">
     <div class="flex items-center justify-between px-5 py-4 border-b border-bordergray">
-      <h3 class="font-bold text-navy">Gespeicherte Angebote</h3>
+      <h3 class="font-bold text-navy" data-i18n="history.title">Gespeicherte Angebote</h3>
       <button id="btn-close-history" class="text-slate-400 hover:text-navy text-xl leading-none">&times;</button>
     </div>
     <div id="history-list" class="max-h-[60vh] overflow-y-auto divide-y divide-bordergray"></div>
-    <div id="history-empty" class="hidden p-8 text-center text-sm text-slate-400">Noch keine Angebote gespeichert.</div>
+    <div id="history-empty" class="hidden p-8 text-center text-sm text-slate-400" data-i18n="history.empty">Noch keine Angebote gespeichert.</div>
   </div>
 </div>
 
@@ -328,6 +340,7 @@
 
 </div><!-- /#app-shell -->
 
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
