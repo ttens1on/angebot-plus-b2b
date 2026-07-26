@@ -164,6 +164,14 @@ body { background: var(--coolgray); }
   header .lang-switch .lang-btn { padding: 6px 7px; }
 }
 
+/* Collapse the history button to icon-only once it no longer fits next to
+   the language switcher on very narrow phones (avoids header overflow / a
+   horizontal-scroll page). */
+@media (max-width: 400px) {
+  #btn-history .history-label-short { display: none; }
+  #btn-history { padding-left: 10px; padding-right: 10px; }
+}
+
 /* ------------------------------ Document type switcher ------------------------------ */
 .doctype-bar {
   background: #fff;
@@ -171,6 +179,7 @@ body { background: var(--coolgray); }
 }
 .doctype-switch {
   display: inline-flex;
+  max-width: 100%;
   background: var(--coolgray);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -183,7 +192,21 @@ body { background: var(--coolgray); }
   font-weight: 600;
   color: var(--slate-500);
   border-radius: 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: background .15s, color .15s;
+}
+
+/* On very narrow phones the three document-type labels no longer fit on one
+   line; scroll the pill horizontally (contained) instead of overflowing the
+   whole page. */
+@media (max-width: 480px) {
+  .doctype-switch {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .doctype-switch::-webkit-scrollbar { display: none; }
 }
 .doctype-btn:hover { color: var(--navy); }
 .doctype-btn.active { background: var(--navy); color: #fff; }
@@ -360,18 +383,36 @@ body { background: var(--coolgray); }
 .ir-del-btn:hover { background: #FEF2F2; border-color: #FCA5A5; }
 
 /* ------------------------------ A4 live preview ------------------------------ */
+/* The page is always laid out at its native 720px design width so text and
+   table columns never reflow/clip on narrow screens; .a4-scale-box just
+   reserves the correctly-proportioned (A4 ratio) footprint at the current
+   container width, and JS applies a matching transform: scale() to .a4-page.
+   This scales the whole preview smoothly like a thumbnail instead of
+   squeezing fixed-px fonts/padding into a too-narrow box. */
 .a4-wrapper {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
-.a4-page {
+.a4-scale-box {
+  position: relative;
   width: 100%;
   max-width: 720px;
   aspect-ratio: 210 / 297;
+  overflow: hidden;
   background: #fff;
   box-shadow: 0 10px 15px -3px rgba(15,23,42,.1), 0 4px 6px -4px rgba(15,23,42,.1), 0 0 0 1px var(--border);
   border-radius: 3px;
+}
+
+.a4-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 720px;
+  aspect-ratio: 210 / 297;
+  background: #fff;
   padding: 34px 40px;
   font-size: 9.2px;
   line-height: 1.45;
@@ -379,6 +420,7 @@ body { background: var(--coolgray); }
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  transform-origin: top left;
 }
 
 .a4-topline {

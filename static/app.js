@@ -77,6 +77,8 @@ const els = {
   labelOfferNumber: document.getElementById("label-offer-number"),
   labelValidityDays: document.getElementById("label-validity-days"),
   langButtons: document.querySelectorAll(".lang-btn"),
+  a4ScaleBox: document.getElementById("a4-scale-box"),
+  a4Page: document.getElementById("a4-preview"),
 };
 
 // ------------------------------- Formatting -------------------------------
@@ -126,6 +128,7 @@ function enterApp() {
   setTimeout(() => {
     els.landing.style.display = "none";
   }, 450);
+  updateA4Scale();
 }
 
 // ------------------------------- Document type -------------------------------
@@ -550,6 +553,26 @@ function setLanguage(lang) {
   renderPreview();
 }
 
+// ------------------------------- A4 preview scaling -------------------------------
+// The .a4-page is always laid out at its native 720px design width (so text
+// and table columns never reflow/clip); we just scale it visually to fit
+// whatever width .a4-scale-box actually has on the current screen.
+const A4_DESIGN_WIDTH = 720;
+
+function updateA4Scale() {
+  if (!els.a4ScaleBox || !els.a4Page) return;
+  const width = els.a4ScaleBox.clientWidth;
+  if (!width) return;
+  const scale = width / A4_DESIGN_WIDTH;
+  els.a4Page.style.transform = `scale(${scale})`;
+}
+
+if (els.a4ScaleBox && "ResizeObserver" in window) {
+  new ResizeObserver(updateA4Scale).observe(els.a4ScaleBox);
+} else {
+  window.addEventListener("resize", updateA4Scale);
+}
+
 // ------------------------------- Mobile tabs -------------------------------
 function setMobileTab(tab) {
   const isForm = tab === "form";
@@ -563,6 +586,7 @@ function setMobileTab(tab) {
   els.tabPreview.classList.toggle("text-navy", !isForm);
   els.tabPreview.classList.toggle("border-transparent", isForm);
   els.tabPreview.classList.toggle("text-slate-400", isForm);
+  if (!isForm) updateA4Scale();
 }
 
 // ------------------------------- Wiring -------------------------------
@@ -599,4 +623,5 @@ document.querySelectorAll(".lang-btn").forEach((btn) => {
     await fetchNextOfferNumber();
   }
   renderPreview();
+  updateA4Scale();
 })();
